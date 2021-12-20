@@ -1,36 +1,39 @@
 package org.example;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+
 import org.apache.http.util.EntityUtils;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.io.IOException;
+
 
 public class WebSpyder {
     private int sockTmOut;
     private int connTmOut;
     private CloseableHttpClient client;
+    private RequestConfig config;
     private CloseableHttpResponse response;
 
     public WebSpyder(String url) {
         this.sockTmOut = 1000;
         this.connTmOut = 500;
-        this.client = HttpClients.createDefault();
         this.response = null;
+        this.client = HttpClients.createDefault();
+        this.config = RequestConfig.custom()
+                .setSocketTimeout(this.sockTmOut)
+                .setConnectTimeout(this.connTmOut)
+                .build();
         this.updateUrl(url);
     }
 
     public void updateUrl(String url) {
         HttpGet httpget = new HttpGet(url);
-        RequestConfig config = RequestConfig.custom()
-                .setSocketTimeout(this.sockTmOut)
-                .setConnectTimeout(this.connTmOut)
-                .build();
-        httpget.setConfig(config);
+        httpget.setConfig(this.config);
         try {
             this.response = client.execute(httpget);
             System.out.println(this.response.getStatusLine());
