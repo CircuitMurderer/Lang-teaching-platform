@@ -5,14 +5,19 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class WebParser {
     private Document doc;
     private List<String> hrefs;
     private List<String> titles;
     private List<String> news;
+
+    private final String NOPSS = "http://www.nopss.gov.cn/GB/430752/430755";
+    private final String baseNOPSS = "http://www.nopss.gov.cn";
 
     public WebParser(String html) {
         this.doc = Jsoup.parse(html);
@@ -28,12 +33,17 @@ public class WebParser {
         this.titles.clear();
     }
 
-    public void renew(String html) {
+    public void renew(String url) {
         this.flush();
-        this.doc = Jsoup.parse(html);
+        this.doc = null;
+        try {
+            this.doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public List<String> getNOPSSnews() {
+    private void getNOPSSTitlesAndHrefs() {
         Elements ele = doc.getElementsByClass("QHbox");
         for (Element e: ele) {
             Elements uls = e.getElementsByClass("clearfix");
@@ -42,11 +52,42 @@ public class WebParser {
                     continue;
                 Elements links = ul.getElementsByTag("a");
                 for (Element link: links) {
-                    hrefs.add(link.attr("href"));
-                    titles.add(link.text());
+                    this.hrefs.add(link.attr("href"));
+                    this.titles.add(link.text());
                 }
             }
         }
-        return titles;
+    }
+
+    public List<String> getNOPSSNews() {
+        this.renew(NOPSS);
+        this.getNOPSSTitlesAndHrefs();
+        for (String url: this.hrefs) {
+            String newUrl = baseNOPSS + url;
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(newUrl).get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (doc != null) {
+                Elements ele = doc.getElementsByClass("text_con clearfix ");
+                for (Element e: ele) {
+                    Elements paras = e.getElementsByTag("p");
+                    StringBuilder oneNews = new StringBuilder();
+                    for (Element para: paras) {
+                        StringBuilder s = new StringBuilder(para.text());
+                        if (!para.children().isEmpty() && para.child(0).tagName().equals("strong")) {
+                            s.insert(0, "<strong>");
+                            s.append("</strong>");
+                        }
+                        oneNews.append(s).append("\n");
+                    }
+                    this.news.add(oneNews.toString());
+                }
+            }
+        }
+        return this.news;
     }
 }
