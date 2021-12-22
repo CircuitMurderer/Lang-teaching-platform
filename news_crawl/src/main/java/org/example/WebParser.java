@@ -59,6 +59,14 @@ public class WebParser {
         }
     }
 
+    public List<String> getNowTitles() {
+        return this.titles;
+    }
+
+    public List<String> getNowHrefs() {
+        return this.hrefs;
+    }
+
     public List<String> getNOPSSNews() {
         this.renew(NOPSS);
         this.getNOPSSTitlesAndHrefs();
@@ -77,11 +85,13 @@ public class WebParser {
                     Elements paras = e.getElementsByTag("p");
                     StringBuilder oneNews = new StringBuilder();
                     for (Element para: paras) {
-                        StringBuilder s = new StringBuilder(para.text());
-                        if (!para.children().isEmpty() && para.child(0).tagName().equals("strong")) {
-                            s.insert(0, "<strong>");
-                            s.append("</strong>");
+                        StringBuilder s = new StringBuilder();
+                        if (!para.children().isEmpty()) {
+                            for (Element txt: para.getElementsByTag("strong")) {
+                                s.append("<strong>").append(txt.text()).append("</strong>");
+                            }
                         }
+                        s.append(para.ownText());
                         oneNews.append(s).append("\n");
                     }
                     this.news.add(oneNews.toString());

@@ -10,6 +10,6 @@ public class App {
         WebParser parser = new WebParser(spyder.getContent());
 
         List<String> news = parser.getNOPSSNews();
-        System.out.println(news.get(1));
+        System.out.println(news.get(0));
     }
 }
