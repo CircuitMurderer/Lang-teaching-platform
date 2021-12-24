@@ -1,0 +1,5 @@
+<!-- pages/demo/demo.wxml -->
+<import src="../../components/wxParse/wxParse.wxml" />
+<view>
+  <template is="wxParse" data="{{wxParseData:aHrefHrefData.nodes}}" />
+</view>
