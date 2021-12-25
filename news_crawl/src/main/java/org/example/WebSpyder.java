@@ -1,59 +1,112 @@
 package org.example;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-
-import org.apache.http.util.EntityUtils;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class WebSpyder {
-    private int sockTmOut;
-    private int connTmOut;
-    private CloseableHttpClient client;
-    private RequestConfig config;
-    private CloseableHttpResponse response;
+    private final List<String> hrefs;
+    private final List<String> news;
+    private final List<String> times;
+    private final List<String> titles;
 
-    public WebSpyder(String url) {
-        this.sockTmOut = 1000;
-        this.connTmOut = 500;
-        this.response = null;
-        this.client = HttpClients.createDefault();
-        this.config = RequestConfig.custom()
-                .setSocketTimeout(this.sockTmOut)
-                .setConnectTimeout(this.connTmOut)
-                .build();
-        this.updateUrl(url);
+    static final String NOPSS = "http://www.nopss.gov.cn/GB/430752/430755";
+    static final String BASENOPSS = "http://www.nopss.gov.cn";
+
+    public WebSpyder() {
+        this.news = new ArrayList<>();
+        this.times = new ArrayList<>();
+        this.hrefs = new ArrayList<>();
+        this.titles = new ArrayList<>();
     }
 
-    public void updateUrl(String url) {
-        HttpGet httpget = new HttpGet(url);
-        httpget.setConfig(this.config);
+    public void flush() {
+        this.news.clear();
+        this.times.clear();
+        this.hrefs.clear();
+        this.titles.clear();
+    }
+
+    private void getNOPSSTitlesAndHrefs() {
+        Document doc = null;
         try {
-            this.response = client.execute(httpget);
-            System.out.println(this.response.getStatusLine());
+            doc = Jsoup.parse(new URL(NOPSS).openStream(), "gbk", NOPSS);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getContent() {
-        String content = "";
-        if (this.response != null) {
-            HttpEntity entity = this.response.getEntity();
-            if (this.response.getStatusLine().getStatusCode() == 200) {
-                try {
-                    content = EntityUtils.toString(entity, "gbk");
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if (doc != null) {
+            Elements ele = doc.getElementsByClass("QHbox");
+            for (Element e : ele) {
+                Elements uls = e.getElementsByClass("clearfix");
+                for (Element ul : uls) {
+                    if (ul.hasClass("page_n clearfix"))
+                        continue;
+                    Elements links = ul.getElementsByTag("a");
+                    for (Element link : links) {
+                        this.hrefs.add(link.attr("href"));
+                        this.titles.add(link.text());
+                    }
+                    Elements tm = ul.getElementsByTag("em");
+                    for (Element t : tm) {
+                        this.times.add(t.text());
+                    }
                 }
             }
         }
-        return content;
+    }
+
+    public List<String> getNowTitles() {
+        return this.titles;
+    }
+
+    public List<String> getNowHrefs() {
+        return this.hrefs;
+    }
+
+    public List<String> getNowTimes() {
+        return this.times;
+    }
+
+    public List<String> getNOPSSNews() {
+        this.flush();
+        System.out.println("Getting news...");
+        this.getNOPSSTitlesAndHrefs();
+        for (String url: this.hrefs) {
+            String newUrl = BASENOPSS + url;
+            Document doc = null;
+            try {
+                doc = Jsoup.parse(new URL(newUrl).openStream(), "gbk", newUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (doc != null) {
+                Elements ele = doc.getElementsByClass("text_con clearfix ");
+                for (Element e: ele) {
+                    Elements paras = e.getElementsByTag("p");
+                    StringBuilder oneNews = new StringBuilder();
+                    for (Element para: paras) {
+                        StringBuilder s = new StringBuilder();
+                        if (!para.children().isEmpty()) {
+                            for (Element txt: para.getElementsByTag("strong")) {
+                                s.append("<strong>").append(txt.text()).append("</strong>");
+                            }
+                        }
+                        s.append(para.ownText());
+                        oneNews.append(s).append("\n");
+                    }
+                    this.news.add(oneNews.toString());
+                }
+            }
+        }
+        System.out.println("Done.");
+        return this.news;
     }
 }

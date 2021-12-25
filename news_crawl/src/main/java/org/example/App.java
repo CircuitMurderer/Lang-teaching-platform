@@ -5,11 +5,15 @@ import java.util.List;
 
 public class App {
     public static void main(String[] args) {
-        String SheKeJJZK = "http://www.nopss.gov.cn/GB/430752/430755";
-        WebSpyder spyder = new WebSpyder(SheKeJJZK);
-        WebParser parser = new WebParser(spyder.getContent());
+        WebSpyder spyder = new WebSpyder();
+        List<String> news = spyder.getNOPSSNews();
+        List<String> titles = spyder.getNowTitles();
+        List<String> times = spyder.getNowTimes();
 
-        List<String> news = parser.getNOPSSNews();
-        System.out.println(news.get(0));
+        //System.out.println(times.get(1) + "\n" + titles.get(1) + "\n" + news.get(1));
+        SqlConnector sc = new SqlConnector();
+        //sc.insertNews("NOPSS", titles.get(0), times.get(0), news.get(0));
+        sc.insertManyNews("NOPSS", titles, times, news);
+        sc.selectNews("NOPSS");
     }
 }
