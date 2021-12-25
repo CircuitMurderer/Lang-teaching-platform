@@ -1,0 +1,6 @@
+/* components/footer/copyright.wxss */
+.copyright {
+  text-align: center;
+  color: #979797;
+  font-size: 28rpx;
+}
