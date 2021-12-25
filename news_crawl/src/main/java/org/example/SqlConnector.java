@@ -10,7 +10,7 @@ public class SqlConnector {
     static final String PASSWORD = "2333";
 
     static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/news?&characterEncoding=gbk";
+    static final String DB_URL_ENC = "jdbc:mysql://localhost:3306/news?&characterEncoding=";
 
     final String TODAY = this.getToday();
 
@@ -27,7 +27,8 @@ public class SqlConnector {
         return sdf.format(new Date());
     }
 
-    public void insertNews(String tableName, String title, String time, String text) {
+    public void insertNews(String tableName, String title,
+                           String time, String text, String encode) {
         String query = "INSERT INTO %s VALUES ('%s', '%s', '%s', '%s')";
         query = String.format(query, tableName, title, time, text, TODAY);
 
@@ -37,7 +38,7 @@ public class SqlConnector {
         Connection conn;
         Statement stmt;
         try {
-            conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            conn = DriverManager.getConnection(DB_URL_ENC + encode, USERNAME, PASSWORD);
             stmt = conn.createStatement();
 
             ResultSet rs = stmt.executeQuery(select);
@@ -57,7 +58,7 @@ public class SqlConnector {
     }
 
     public void insertManyNews(String tableName, List<String> title,
-                               List<String> time, List<String> text) {
+                               List<String> time, List<String> text, String encode) {
         assert title.size() == time.size();
         assert title.size() == text.size();
 
@@ -68,7 +69,8 @@ public class SqlConnector {
         Statement stmt;
 
         try {
-            conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Inserting data...");
+            conn = DriverManager.getConnection(DB_URL_ENC + encode, USERNAME, PASSWORD);
             stmt = conn.createStatement();
 
             for (int i = 0; i < title.size(); i++) {
@@ -82,7 +84,9 @@ public class SqlConnector {
                 if (rs.next()) {
                     System.out.println("This item exists: " + titleNow);
                 } else {
-                    String insert = String.format(insertBase, tableName, titleNow, timeNow, textNow, TODAY);
+                    String insert = String.format(insertBase,
+                            tableName, titleNow, timeNow,
+                            textNow, TODAY);
                     stmt.execute(insert);
                     System.out.println("Insertion complete.");
                 }
@@ -91,19 +95,19 @@ public class SqlConnector {
 
             stmt.close();
             conn.close();
+            System.out.println("All done.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("All done.");
     }
 
-    public void selectNews(String tableName) {
+    public void selectNews(String tableName, String encode) {
         Connection conn;
         Statement stmt;
 
         try {
             System.out.println("Collecting...");
-            conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            conn = DriverManager.getConnection(DB_URL_ENC + encode, USERNAME, PASSWORD);
             stmt = conn.createStatement();
             String query = "SELECT * FROM " + tableName;
 

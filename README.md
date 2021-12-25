@@ -1,6 +1,8 @@
 # Lang-teaching-platform
 SA final
 
-> OpenJDK 11.0.13
+> Crawl: OpenJDK 11.0.13
 >
->  
+> Process request: php 7.4
+>
+> Server: nginx 1.18

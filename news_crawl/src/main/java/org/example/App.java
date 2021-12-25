@@ -1,19 +1,27 @@
 package org.example;
 
 
-import java.util.List;
-
 public class App {
     public static void main(String[] args) {
         WebSpyder spyder = new WebSpyder();
-        List<String> news = spyder.getNOPSSNews();
-        List<String> titles = spyder.getNowTitles();
-        List<String> times = spyder.getNowTimes();
-
-        //System.out.println(times.get(1) + "\n" + titles.get(1) + "\n" + news.get(1));
         SqlConnector sc = new SqlConnector();
-        //sc.insertNews("NOPSS", titles.get(0), times.get(0), news.get(0));
-        sc.insertManyNews("NOPSS", titles, times, news);
-        sc.selectNews("NOPSS");
+
+        var texts = spyder.getNOPSSNews();
+        var titles = spyder.getNowTitles();
+        var times = spyder.getNowTimes();
+
+        sc.insertManyNews("culture", titles, times, texts, "gbk");
+
+        texts = spyder.get163News("world");
+        titles = spyder.getNowTitles();
+        times = spyder.getNowTimes();
+
+        sc.insertManyNews("world", titles, times, texts, "utf8");
+
+        texts = spyder.get163News("domestic");
+        titles = spyder.getNowTitles();
+        times = spyder.getNowTimes();
+
+        sc.insertManyNews("domestic", titles, times, texts, "utf8");
     }
 }
