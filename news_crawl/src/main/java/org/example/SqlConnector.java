@@ -43,10 +43,10 @@ public class SqlConnector {
 
             ResultSet rs = stmt.executeQuery(select);
             if (rs.next()) {
-                System.out.println("This item exists.");
+                System.out.println("This item exists: " + title);
             } else {
                 stmt.execute(query);
-                System.out.println("Insertion complete.");
+                System.out.println("Insertion complete: " + title);
             }
 
             rs.close();
@@ -88,7 +88,7 @@ public class SqlConnector {
                             tableName, titleNow, timeNow,
                             textNow, TODAY);
                     stmt.execute(insert);
-                    System.out.println("Insertion complete.");
+                    System.out.println("Insertion complete: " + titleNow);
                 }
                 rs.close();
             }

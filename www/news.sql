@@ -25,3 +25,21 @@ CREATE TABLE `world` (
     text text NOT NULL,
     utime varchar(10)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `gushiwen`;
+CREATE TABLE `gushiwen` (
+    title varchar(100) PRIMARY KEY NOT NULL,
+    time varchar(50) NOT NULL,
+    text text NOT NULL,
+    utime varchar(10)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `intensive`;
+CREATE TABLE `intensive` (
+    title varchar(100) PRIMARY KEY NOT NULL,
+    time varchar(50) NOT NULL,
+    text text NOT NULL,
+    utime varchar(10)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+

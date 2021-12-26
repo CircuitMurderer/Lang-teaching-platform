@@ -1,5 +1,10 @@
 package org.example;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlDivision;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,6 +21,8 @@ public class WebSpyder {
     static final String BaseNOPSS = "http://www.nopss.gov.cn";
 
     static final String $163 = "https://news.163.com/";
+
+    static final String GuShiWen = "https://www.gushiwen.cn/";
 
     static final int MAXLENGTH = 20;
 
@@ -177,6 +184,104 @@ public class WebSpyder {
                     }
                     this.news.add(s.toString());
                 }
+            }
+        }
+        return this.news;
+    }
+
+    public void getGSWHeadsAndHrefs() {
+        this.flush();
+        Document doc = null;
+        try {
+            doc = Jsoup.parse(new URL(GuShiWen).openStream(), "utf-8", GuShiWen);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (doc != null) {
+            for (Element ele : doc.getElementsByClass("cont")) {
+                Elements paras = ele.getElementsByTag("p");
+                if (paras.isEmpty()) {
+                    continue;
+                }
+                Element p = paras.get(0);
+                for (Element a : p.getElementsByTag("a")) {
+                    this.hrefs.add(a.attr("href"));
+                    this.titles.add(a.text());
+                    this.times.add("Any");
+                }
+            }
+        }
+    }
+
+    public List<String> getGSWNews() {
+        System.out.println("Getting gushiwen news...");
+        this.getGSWHeadsAndHrefs();
+        WebClient client = new WebClient(BrowserVersion.BEST_SUPPORTED);
+
+        int bound = Math.min(this.hrefs.size(), MAXLENGTH);
+        System.out.println(bound);
+        for (int i = 0; i < bound; i++) {
+            String url = this.hrefs.get(i);
+            try {
+                HtmlPage page = client.getPage(url);
+                HtmlDivision div = (HtmlDivision) page
+                        .getByXPath("//div[@style='text-align:center; margin-top:-5px;']")
+                        .get(0);
+
+                for (var child : div.getByXPath("//a[text()='展开阅读全文 ∨']")) {
+                    page = ((HtmlAnchor) child).click();
+                }
+
+                Document doc = Jsoup.parse(page.asXml(), url);
+                Elements divs = doc.getElementsByClass("cont");
+                Element d = divs.get(1);
+
+                StringBuilder s = new StringBuilder();
+                for (Element e : d.children()) {
+                    if (e.tagName().equals("p")) {
+                        s.append(e.text()).append("\n");
+                    } else if (e.tagName().equals("div") &&
+                            e.className().equals("contson")) {
+                        String newStr = e.text()
+                                .replace(") ", ")\n")
+                                .replace("？ ", "？\n")
+                                .replace("！ ", "！\n")
+                                .replace("。 ", "。\n");
+                        s.append(newStr).append("\n");
+                    }
+                }
+
+                boolean needFlatten = false;
+                for (Element e : doc.getElementsByClass("sons")) {
+                    if (e.id().contains("fanyiquan")) {
+                        needFlatten = true;
+                        for (Element ed : e.getElementsByClass("contyishang")) {
+                            String newStr = ed.text()
+                                    .replace(" 译文 ", "\n译文\n")
+                                    .replace(" 注释 ", "\n注释\n")
+                                    .replace("。 ", "。\n")
+                                    .replace("▲", "");
+                            s.append("\n").append(newStr).append("\n");
+                            break;
+                        }
+                    }
+                }
+
+                if (!needFlatten) {
+                    for (Element ed : doc.getElementsByClass("contyishang")) {
+                        String newStr = ed.text()
+                                .replace(" 译文 ", "\n译文\n")
+                                .replace(" 注释 ", "\n注释\n")
+                                .replace("。 ", "。\n")
+                                .replace("▲", "");
+                        s.append("\n").append(newStr).append("\n");
+                        break;
+                    }
+                }
+                this.news.add(s.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return this.news;

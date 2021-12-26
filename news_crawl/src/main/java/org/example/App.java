@@ -23,5 +23,11 @@ public class App {
         times = spyder.getNowTimes();
 
         sc.insertManyNews("domestic", titles, times, texts, "utf8");
+
+        texts = spyder.getGSWNews();
+        titles = spyder.getNowTitles();
+        times = spyder.getNowTimes();
+
+        sc.insertManyNews("gushiwen", titles, times, texts, "utf8");
     }
 }
