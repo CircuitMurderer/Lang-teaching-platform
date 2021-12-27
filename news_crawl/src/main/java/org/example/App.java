@@ -24,10 +24,22 @@ public class App {
 
         sc.insertManyNews("domestic", titles, times, texts, "utf8");
 
+        texts = spyder.getCNDailyNews();
+        titles = spyder.getNowTitles();
+        times = spyder.getNowTimes();
+
+        sc.insertManyNews("doublelang", titles, times, texts, "utf8");
+
         texts = spyder.getGSWNews();
         titles = spyder.getNowTitles();
         times = spyder.getNowTimes();
 
         sc.insertManyNews("gushiwen", titles, times, texts, "utf8");
+
+        texts = spyder.getZaoBaoNews();
+        titles = spyder.getNowTitles();
+        times = spyder.getNowTimes();
+
+        sc.insertManyNews("expert", titles, times, texts, "utf8");
     }
 }
