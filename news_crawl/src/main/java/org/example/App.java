@@ -3,43 +3,54 @@ package org.example;
 
 public class App {
     public static void main(String[] args) {
-        WebSpyder spyder = new WebSpyder();
-        SqlConnector sc = new SqlConnector();
+        boolean isOK = true;
+        try {
+            WebSpyder spyder = new WebSpyder();
+            SqlConnector sc = new SqlConnector();
 
-        var texts = spyder.getNOPSSNews();
-        var titles = spyder.getNowTitles();
-        var times = spyder.getNowTimes();
+            var texts = spyder.getNOPSSNews();
+            var titles = spyder.getNowTitles();
+            var times = spyder.getNowTimes();
 
-        sc.insertManyNews("culture", titles, times, texts, "gbk");
+            sc.insertManyNews("culture", titles, times, texts, "gbk");
 
-        texts = spyder.get163News("world");
-        titles = spyder.getNowTitles();
-        times = spyder.getNowTimes();
+            texts = spyder.get163News("world");
+            titles = spyder.getNowTitles();
+            times = spyder.getNowTimes();
 
-        sc.insertManyNews("world", titles, times, texts, "utf8");
+            sc.insertManyNews("world", titles, times, texts, "utf8");
 
-        texts = spyder.get163News("domestic");
-        titles = spyder.getNowTitles();
-        times = spyder.getNowTimes();
+            texts = spyder.get163News("domestic");
+            titles = spyder.getNowTitles();
+            times = spyder.getNowTimes();
 
-        sc.insertManyNews("domestic", titles, times, texts, "utf8");
+            sc.insertManyNews("domestic", titles, times, texts, "utf8");
 
-        texts = spyder.getCNDailyNews();
-        titles = spyder.getNowTitles();
-        times = spyder.getNowTimes();
+            texts = spyder.getCNDailyNews();
+            titles = spyder.getNowTitles();
+            times = spyder.getNowTimes();
 
-        sc.insertManyNews("doublelang", titles, times, texts, "utf8");
+            sc.insertManyNews("doublelang", titles, times, texts, "utf8");
 
-        texts = spyder.getGSWNews();
-        titles = spyder.getNowTitles();
-        times = spyder.getNowTimes();
+            texts = spyder.getGSWNews();
+            titles = spyder.getNowTitles();
+            times = spyder.getNowTimes();
 
-        sc.insertManyNews("gushiwen", titles, times, texts, "utf8");
+            sc.insertManyNews("gushiwen", titles, times, texts, "utf8");
 
-        texts = spyder.getZaoBaoNews();
-        titles = spyder.getNowTitles();
-        times = spyder.getNowTimes();
+            texts = spyder.getZaoBaoNews();
+            titles = spyder.getNowTitles();
+            times = spyder.getNowTimes();
 
-        sc.insertManyNews("expert", titles, times, texts, "utf8");
+            sc.insertManyNews("expert", titles, times, texts, "utf8");
+        } catch (Exception e) {
+            isOK = false;
+            e.printStackTrace();
+        } finally {
+            if (isOK)
+                System.exit(0);
+            else
+                System.exit(1);
+        }
     }
 }

@@ -22,13 +22,21 @@ public class SqlConnector {
         }
     }
 
+    private String cleanString(String s) {
+        return s.replace("'", "’");
+    }
+
     public String getToday() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         return sdf.format(new Date());
     }
 
-    public void insertNews(String tableName, String title,
-                           String time, String text, String encode) {
+    public void insertNews(String tableName, String nTitle,
+                           String nTime, String nText, String encode) {
+        var title = this.cleanString(nTitle);
+        var time = this.cleanString(nTime);
+        var text = this.cleanString(nText);
+
         String query = "INSERT INTO %s VALUES ('%s', '%s', '%s', '%s')";
         query = String.format(query, tableName, title, time, text, TODAY);
 
@@ -61,6 +69,9 @@ public class SqlConnector {
                                List<String> time, List<String> text, String encode) {
         assert title.size() == time.size();
         assert title.size() == text.size();
+        System.out.println(title.size());
+        System.out.println(time.size());
+        System.out.println(text.size());
 
         String insertBase = "INSERT INTO %s VALUES ('%s', '%s', '%s', '%s')";
         String selectBase = "SELECT * FROM %s WHERE title='%s'";
@@ -77,6 +88,10 @@ public class SqlConnector {
                 String titleNow = title.get(i);
                 String timeNow = time.get(i);
                 String textNow = text.get(i);
+
+                titleNow = this.cleanString(titleNow);
+                timeNow = this.cleanString(timeNow);
+                textNow = this.cleanString(textNow);
 
                 String select = String.format(selectBase, tableName, titleNow);
                 ResultSet rs = stmt.executeQuery(select);

@@ -396,7 +396,7 @@ public class WebSpyder {
                     String nowTime = tm.text();
                     nowTime = nowTime.substring(nowTime.length() - 16);
 
-                    this.titles.add(tit.text().replace("'", "‘"));
+                    this.titles.add(tit.text());
                     this.times.add(nowTime);
                     break;
                 }
@@ -407,7 +407,7 @@ public class WebSpyder {
                         String htm = p.html().replace("<br>", "[br]");
                         var par = Jsoup.parse(htm);
                         var txt = par.text().replace("[br]", "\n");
-                        s.append(txt.replace("'", "‘")).append("\n");
+                        s.append(txt).append("\n");
                     }
                     break;
                 }
