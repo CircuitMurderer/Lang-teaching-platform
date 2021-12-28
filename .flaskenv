@@ -1,0 +1,1 @@
+FALSK_ENV=development
