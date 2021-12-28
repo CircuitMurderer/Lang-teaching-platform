@@ -1,3 +1,6 @@
+goal: 建议修改request，添加参数time、table（newstype）【原版点击跳转都已经处理好了】
+
+
 精读传统文化三篇：中国社会科学报基金专刊，http://www.nopss.gov.cn/GB/430752/430755/index.html（两周一更新，每次3篇）
 
 中国古代史：华夏历史网，http://www.hxlsw.com/
