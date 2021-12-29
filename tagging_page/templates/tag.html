@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <title>文本标注</title>
+</head>
+<body>
+<form role="form">
+    <div class="form-group" style="text-align: center">
+        <h1>文本标注 Text tagging</h1>
+        <br>
+        <label for="name">《{{ news.title|replace('《', '<')|replace('》', '>') }}》</label>
+        <br>
+        <br>
+        <textarea id="tag-input" class="form-control" rows="15" style="margin: auto">
+        {% for txt in news.text %}
+        {{ txt }}
+        {% endfor %}
+        </textarea>
+        <br>
+        <button type="button" onclick="tagStr()" class="btn btn-primary">标注选中的句子</button>
+        &nbsp;
+        <!--button type="button" class="btn btn-success">设置标注类型</button-->
+        <button type="button" onclick="setTagger()" class="btn btn-warning">设置标注类型及标注内容</button>
+        &nbsp;
+        <button type="button" onclick="untagStr()" class="btn btn-danger">删除此句子的标注</button>
+        &nbsp;
+        <button type="button" class="btn btn-success">保存并提交</button>
+    </div>
+    <input type="hidden" id="tagger" value="<tag>">
+    <div class="form-group" style="text-align: center">
+        <label for="name">标注类型</label>
+        <select class="form-control" id="tag-type" style="margin: auto; width: 50%">
+            <option>字</option>
+            <option>词</option>
+            <option>短语</option>
+            <option>句子</option>
+        </select>
+        <label for="name">标注内容</label>
+        <input type="text" class="form-control" id="tag-content" style="margin: auto; width: 50%">
+    </div>
+</form>
+<script>
+    function mapping(s) {
+        let map = [];
+        map["字"] = "character";
+        map["词"] = "word";
+        map["短语"] = "phrase";
+        map["句子"] = "sentence";
+        if (s === "") {
+            alert("非法的类型！");
+            return "";
+        }
+        return map[s];
+    }
+
+    function setTagger() {
+        let tagType = document.getElementById("tag-type");
+        let tagContent = document.getElementById("tag-content");
+
+        let typ = mapping(tagType.value);
+        let cont = tagContent.value;
+
+        let tagger = document.getElementById("tagger");
+        if (cont === "") {
+            tagger.value = "<tag>";
+        } else {
+            if (typ !== "") {
+                tagger.value = "<tag " + typ + "=\"" + cont + "\">";
+            } else {
+                tagger.value = "<tag>";
+            }
+        }
+    }
+
+    function tagStr() {
+        let txtArea = document.getElementById("tag-input");
+        let start = txtArea.selectionStart;
+        let end = txtArea.selectionEnd;
+        let allTxt = txtArea.value;
+
+        if (start - end === 0) {
+            alert("没有选择文本！")
+            return;
+        }
+
+        let taggingTxt = allTxt.substring(start, end);
+        let taggerS = document.getElementById("tagger").value;
+        let taggerE = "</tag>";
+        taggingTxt = taggerS + taggingTxt + taggerE;
+
+        txtArea.value = allTxt.substring(0, start) +
+            taggingTxt + allTxt.substring(end, allTxt.length)
+    }
+
+    function untagStr() {
+        let txtArea = document.getElementById("tag-input");
+        let start = txtArea.selectionStart;
+        let end = txtArea.selectionEnd;
+        let allTxt = txtArea.value;
+
+        if (start - end === 0) {
+            alert("没有选择文本！")
+            return;
+        }
+
+        let frontTxt = allTxt.substring(0, start);
+        let behindTxt = allTxt.substring(end, allTxt.length);
+
+        let untaggingTxt = allTxt.substring(start, end);
+        untaggingTxt = untaggingTxt.replace(/<[^>]+>/g, '');
+
+        txtArea.value = frontTxt + untaggingTxt + behindTxt;
+    }
+</script>
+</body>
+</html>
