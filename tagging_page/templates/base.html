@@ -11,7 +11,7 @@
 </head>
 <body>
     <h2>
-        <img alt="Avatar" class="avatar" src="{{ url_for('static', filename='images/avatar.png') }}">
+        <!--img alt="Avatar" class="avatar" src="{{ url_for('static', filename='images/avatar.png') }}"-->
         精读文章标注界面
     </h2>
     <nav>
@@ -20,8 +20,12 @@
         </ul>
     </nav>
     {% block content %}{% endblock %}
-    <footer>
-         <small>&copy; 2021 <a href="https://github.com/CircuitMurderer/Lang-teaching-platform">SAFinal</a></small>
-    </footer>
 </body>
+<footer>
+    <small>&copy; 2021
+        <a href="https://github.com/CircuitMurderer/Lang-teaching-platform">
+            Li S., He J., Zhang C., Chen S., Zhao Y.
+        </a>
+    </small>
+</footer>
 </html>

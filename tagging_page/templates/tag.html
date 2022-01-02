@@ -8,29 +8,23 @@
     <title>文本标注</title>
 </head>
 <body>
-<form role="form">
+<form role="form" method="post" action="/save">
     <div class="form-group" style="text-align: center">
         <h1>文本标注 Text tagging</h1>
         <br>
         <label for="name">《{{ news.title|replace('《', '<')|replace('》', '>') }}》</label>
         <br>
         <br>
-        <textarea id="tag-input" class="form-control" rows="15" style="margin: auto">
-        {% for txt in news.text %}
-        {{ txt }}
-        {% endfor %}
-        </textarea>
+        <textarea id="tag-input" name="main-text" class="form-control" rows="15" style="margin: auto; width: 50%">
+{% for txt in news.text %}{{ txt }}
+{% endfor %}</textarea>
         <br>
-        <button type="button" onclick="tagStr()" class="btn btn-primary">标注选中的句子</button>
-        &nbsp;
-        <!--button type="button" class="btn btn-success">设置标注类型</button-->
-        <button type="button" onclick="setTagger()" class="btn btn-warning">设置标注类型及标注内容</button>
-        &nbsp;
-        <button type="button" onclick="untagStr()" class="btn btn-danger">删除此句子的标注</button>
-        &nbsp;
-        <button type="button" class="btn btn-success">保存并提交</button>
     </div>
     <input type="hidden" id="tagger" value="<tag>">
+
+    <input type="hidden" name="main-title" value="{{ news.title }}">
+    <input type="hidden" name="main-time" value="{{ news.time }}">
+
     <div class="form-group" style="text-align: center">
         <label for="name">标注类型</label>
         <select class="form-control" id="tag-type" style="margin: auto; width: 50%">
@@ -39,8 +33,14 @@
             <option>短语</option>
             <option>句子</option>
         </select>
+        <br>
         <label for="name">标注内容</label>
         <input type="text" class="form-control" id="tag-content" style="margin: auto; width: 50%">
+        <br><br>
+        <button type="button" onclick="tagStr()" class="btn btn-primary">标注选中的句子</button>&nbsp;
+        <button type="button" onclick="setTagger()" class="btn btn-warning">设置标注类型及标注内容</button>&nbsp;
+        <button type="button" onclick="untagStr()" class="btn btn-danger">删除此句子的标注</button>&nbsp;
+        <button type="submit" class="btn btn-success">保存并提交</button>
     </div>
 </form>
 <script>

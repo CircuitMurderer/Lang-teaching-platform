@@ -4,12 +4,14 @@
 <p>{{ news|length }} Articles</p>
 <ul class="movie-list">
     {% for n in news %}
-    <li>{{ n.title }}
+    <li>[{{ n.type }}]{{ n.title }}
         <span class="float-right">
-            <a class="imdb" href="{{ url_for('tag', which_news=loop.index0) }}" target="_blank" title="Start your tagging!">标注</a>
+            <a class="imdb" href="{{ url_for('tag', which_news=loop.index0) }}" target="_blank" title="Start your tagging!">
+                标注
+            </a>
         </span>
     </li>
     {% endfor %}
 </ul>
-<img alt="Walking Totoro" class="totoro" src="{{ url_for('static', filename='images/totoro.gif') }}" title="to~to~ro~">
+<!--img alt="Walking Totoro" class="totoro" src="{{ url_for('static', filename='images/totoro.gif') }}" title="to~to~ro~"-->
 {% endblock %}

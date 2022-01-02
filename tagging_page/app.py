@@ -1,19 +1,17 @@
-import datetime
 import json
-import random
-
 import requests
-from flask import Flask, render_template
-
-today = datetime.date.today()
-today = today.strftime('%y%m%d')
+import datetime
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
+today = datetime.date.today()
+today = '20' + today.strftime('%y%m%d')
 
-def get_data(which_table, when_day):
-    tar_url = "https://www.heartravel.cn/index.php?table={}&utime=20{}"
-    res = requests.get(tar_url.format(which_table, when_day))
+
+def get_data(which_table):
+    tar_url = "https://www.heartravel.cn/index.php?table={}"
+    res = requests.get(tar_url.format(which_table))
 
     return json.loads(res.text)
 
@@ -21,24 +19,33 @@ def get_data(which_table, when_day):
 data = []
 table = ['culture', 'domestic', 'world', 'gushiwen', 'expert', 'doublelang']
 for i in table:
-    news = get_data(i, today)
-    while len(news) == 0:
-        today = str(int(today) - 1)
-        if today == '20211226':
-            raise RuntimeError('No data in database.')
-        news = get_data(i, today)
-
-    # x = random.randint(0, len(news))
-    print(len(news))
-    dic = news[0]
-    dic['text'] = dic['text'].split('\n')
-    dic['max_len'] = max([len(t) for t in dic['text']])
-    data.append(dic)
+    news = get_data(i)
+    for n in news[:5]:
+        dic = n
+        dic['text'] = dic['text'].split('\n')
+        dic['type'] = i
+        data.append(dic)
 
 
 @app.route('/')
 def index():
     return render_template('index.html', news=data)
+
+
+@app.route('/save', methods=['POST'])
+def save():
+    title = request.form['main-title']
+    time = request.form['main-time']
+    text = request.form['main-text']
+
+    post_data = {
+        'query': "INSERT INTO intensive VALUES "
+                 "('{}', '{}', '{}', '{}')".format(title, time, text, today),
+        'title': title
+    }
+
+    res = requests.post('https://www.heartravel.cn/index.php', data=post_data)
+    return res.text
 
 
 @app.route('/tag/<which_news>')
