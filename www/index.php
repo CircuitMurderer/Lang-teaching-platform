@@ -13,13 +13,12 @@ header("Content-type: text/html; charset=utf-8");
 $username = "root";
 $password = "2333";
 
-if (!isset($_GET['table']) or !isset($_GET['utime'])){
+if (!isset($_GET['table'])){
     echo "Bad params.";
     return;
 }
 
 $table_name = $_GET['table'];
-$update_time = $_GET['utime'];
 $encoder = get_encoder($table_name);
 
 $linked = new mysqli("localhost:3306", $username, $password);
@@ -29,7 +28,7 @@ if ($linked->connect_error) {
 $linked->query("SET NAMES '{$encoder}'");
 $linked->select_db("news");
 
-$query = "SELECT * FROM {$table_name} WHERE utime='{$update_time}'";
+$query = "SELECT * FROM {$table_name} ORDER BY utime DESC LIMIT 10";
 $res = $linked->query($query);
 
 $data = array();

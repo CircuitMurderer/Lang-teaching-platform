@@ -1,0 +1,75 @@
+/* components/scroll-view-refresh-load/scroll-view-refresh-load.wxss */
+:host {
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+.scroll-view-content {
+  height: calc(100% + 80rpx);
+  transform: translateY(-80rpx);
+}
+.scroll-view-content.refresh {
+  transform: translateY(0);
+}
+.scroll-view-content.finish {
+  animation: finish 1.5s ease;
+}
+.finish-text {
+  display: inline-block;
+  width: 100%;
+  background-color: #D8E8F5;
+  color: #4B8FD1 !important;
+  animation: finishText 1s ease-in;
+}
+.pull-down-refresh {
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+}
+.pull-down-text {
+  font-size: 14px;
+  color: rgb(102, 102, 102);
+  vertical-align: middle;
+}
+.pull-down-icon {
+  height: 40rpx;
+  width: 40rpx;
+  margin-right: 10rpx;
+  vertical-align: middle;
+}
+.pull-down-icon-loading {
+  animation: loading 1.2s linear infinite;
+}
+@keyframes finishText {
+  0% {
+    opacity: 0;
+    width: 95%;
+  }
+  70% {
+    opacity: 1;
+    width: 100%;
+  }
+  100% {
+    opacity: 1;
+    width: 100%;
+  }
+}
+@keyframes finish {
+  0% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-80rpx);
+  }
+}
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

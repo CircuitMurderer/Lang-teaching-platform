@@ -1,0 +1,20 @@
+<!-- pages/detail/detail.wxml -->
+<view>
+  <!--template is="wxParse" data="{{newsText}}" /-->
+  <view style="font-weight: bold; font-size: x-large; width: 95%; margin: auto;">{{newsTitle}}</view>
+  <text>\n</text>
+  <block wx:if="{{newsTime !== 'Any'}}">
+    <view style="color: grey; font-weight: lighter; font-size: small; width: 95%; margin: auto;">
+    {{newsTime}}
+  </view>
+  <text>\n</text>
+  </block>
+  <view style="width: 95%; margin: auto;">
+    <block wx:for="{{newsText}}">
+      <block wx:if="{{item && item.length > 0}}">
+        {{item}}
+        <text>\n\n</text>
+      </block>
+    </block>
+  </view>
+</view>
